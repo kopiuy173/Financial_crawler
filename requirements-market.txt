@@ -1,0 +1,2 @@
+# 需求 2（行情快照 / 标的关联 / 回测）依赖；akshare 会拉入 pandas/requests
+akshare>=1.14.0

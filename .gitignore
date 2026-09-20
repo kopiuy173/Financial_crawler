@@ -1,0 +1,65 @@
+# 机密/环境
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets*
+*token*.txt
+*cookie*
+
+# 生产数据与数据库
+data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+chroma/
+chroma_db/
+
+# 运行时状态与日志
+logs/
+*.log
+*.lock
+*_state.json
+seen_ids.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# 前端界面（仅本地）
+drop_upload.py
+start_kb_ui.sh
+start_kb_ui_windows.cmd
+
+# Dify 平台部署编排（非本项目源码，仅本地）
+dify_migration/.env.example
+dify_migration/README.md
+dify_migration/docker-compose.yml
+dify_migration/docs/
+dify_migration/nginx/
+dify_migration/postgres/
+dify_migration/volumes/
+
+# 文档/报告（仓库只留源码）
+*.md
+
+# 编辑器/系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~

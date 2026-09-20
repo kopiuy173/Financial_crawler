@@ -1,0 +1,67 @@
+# data_source_config.yaml — data_fetcher.py 的唯一配置入口
+# API Key 只从环境变量读：TUSHARE_TOKEN / ALPHA_VANTAGE_KEY（禁止写死在 YAML）
+# symbol：A股/基金写 “600519.SH”（SH=沪 / SZ=深 / BJ=北）；港美股写 AAPL / 00700.HK
+# baostock 的 sh.600519 风格由脚本自动转换，配置处统一写 600519.SH
+
+global:
+  timezone: Asia/Shanghai
+  retry:
+    times: 3            # 单只标的失败重试次数
+    backoff_base: 2.0   # 指数退避基数（秒）
+  default_start: "2015-01-01"   # 增量更新时若库里无数据，回拉的起始日期
+  log_level: INFO
+
+# 数据源开关与参数
+sources:
+  akshare:
+    enabled: true
+    market: cn                # cn 中国（A股/基金/期货）
+    daily_api: stock_zh_a_hist
+    limit_per_run: 20
+  tushare:
+    enabled: false            # 需要 TUSHARE_TOKEN
+    market: cn
+    token_env: TUSHARE_TOKEN
+    daily_api: daily
+    frequency_limit: "请参考 Tushare 积分等级（如 200 次/分钟）"
+  alpha_vantage:
+    enabled: false            # 需要 ALPHA_VANTAGE_KEY（免费层限 25 次/天）
+    market: global
+    key_env: ALPHA_VANTAGE_KEY
+    daily_api: TIME_SERIES_DAILY_ADJUSTED
+  baostock:
+    enabled: true
+    market: cn
+    login: true
+  yfinance:
+    enabled: true
+    market: global            # 美股/港股/全球指数
+    daily_api: auto
+
+# 默认关注池
+watchlist:
+  cn_stocks:                   # 由 akshare / tushare / baostock 服务
+    - "600519.SH"              # 贵州茅台
+    - "000001.SZ"              # 平安银行
+    - "300750.SZ"              # 宁德时代
+    - "601318.SH"              # 中国平安
+    - "000858.SZ"              # 五粮液
+  cn_index:                    # 指数（tushare/baostock 支持）
+    - "000001.SH"              # 上证指数
+    - "399001.SZ"              # 深证成指
+  hk_us_stocks:                # 由 yfinance / alpha_vantage 服务
+    - "AAPL"
+    - "MSFT"
+    - "NVDA"
+    - "00700.HK"               # 腾讯控股（yfinance 需 TCEHY / 0700.HK）
+  global_index:
+    - "^GSPC"                  # 标普500
+    - "^IXIC"                  # 纳斯达克
+    - "^HSI"                   # 恒生指数
+
+# 抓取节奏
+schedule:
+  daily_bars: "每日收盘后 17:30（可交给 cron）"
+  fundamentals: "每周一次"
+  financials: "每季度财报季后 5 日"
+  cron_example: "30 17 * * 1-5  cd /home/lian/projects/financial-crawler/dify_migration && /home/lian/projects/ai_env/bin/python python/data_fetcher.py refresh --days 5"

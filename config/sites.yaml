@@ -1,0 +1,54 @@
+# 站点字段：name / enabled / url / type(static|json) / parser / selectors / api_url / max_pages / max_articles / max_pages_budget / save_images
+global:
+  download_delay: 2.0
+  timeout: 30
+  max_retries: 3
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# 代理（按需开启）
+proxy:
+  enabled: false
+  http: "http://127.0.0.1:7890"
+  https: "http://127.0.0.1:7890"
+
+sites:
+  - name: "cnstock_fastnews"
+    enabled: true
+    url: "https://www.cnstock.com/fastNews/10004"
+    type: "static"
+    selectors:
+      title: "div.list_con a"
+      date: "div.list_con span"
+      body: "div.list_con"
+    max_pages: 3
+    max_articles: 40
+    save_images: false
+
+  - name: "wallstreetcn_live"
+    enabled: true
+    type: "json"
+    parser: "wallstreetcn"
+    api_url: "https://api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit=50"
+    max_pages: 1             # 单页接口，暂不支持翻页
+    max_articles: 40
+    save_images: false
+
+  - name: "eastmoney_7x24"
+    enabled: true
+    type: "json"
+    parser: "eastmoney"
+    api_url: "https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_{page}_.html"
+    max_pages: 3
+    max_articles: 40
+    max_pages_budget: 12     # 配额模式下的最大翻页深度
+    save_images: false
+
+  - name: "sina_rolling"
+    enabled: true
+    type: "json"
+    parser: "sina"
+    api_url: "https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2516&num=50&page={page}"
+    max_pages: 3
+    max_articles: 40
+    max_pages_budget: 12     # 配额模式下的最大翻页深度
+    save_images: false

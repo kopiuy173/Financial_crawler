@@ -1,0 +1,11 @@
+# 每日新闻抓取时段与字节配额
+timezone: "Asia/Shanghai"
+
+daily_quota_bytes: 2097152        # 每日入库字节上限（2MB）
+window_poll_seconds: 30           # 守护轮询间隔（秒）
+
+# at = 窗口执行时间；cutoff = 本窗口接收新闻的最晚发布时间
+windows:
+  - {id: "morning", at: "09:10", cutoff: "09:30"}
+  - {id: "noon",    at: "12:30", cutoff: "13:00"}
+  - {id: "evening", at: "17:30", cutoff: "17:30"}

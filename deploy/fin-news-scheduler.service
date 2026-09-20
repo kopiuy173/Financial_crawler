@@ -1,0 +1,18 @@
+[Unit]
+Description=金融快讯调度守护（三时段）
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/lian/projects/ai_env/bin/python /home/lian/projects/financial-crawler/news_scheduler.py --daemon
+WorkingDirectory=/home/lian/projects/financial-crawler
+Restart=on-failure
+RestartSec=20
+Environment=KB_STORE_ROOT=/mnt/d/数据库
+# KB_STORE_ROOT 指向 D 盘“数据库”母目录；未设置或 D 盘不可用时回退项目本地 data/
+StandardOutput=append:/home/lian/projects/financial-crawler/logs/pipeline.log
+StandardError=append:/home/lian/projects/financial-crawler/logs/pipeline.log
+
+[Install]
+WantedBy=default.target

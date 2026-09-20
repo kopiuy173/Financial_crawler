@@ -1,0 +1,56 @@
+# 盘前主题预测 → 收盘结算 → 复盘反思（predict.py 读取；hooks 见 market.yaml）
+timezone: "Asia/Shanghai"
+enabled: true
+
+# 盘前生成：due 开始 / deadline 目标 / allow_late_until 兜底
+morning:
+  due: "08:40"
+  deadline: "09:10"
+  allow_late_until: "09:30"
+
+# 模型入口：backend = deepseek（现用）/ dify（预留）
+model:
+  enabled: true
+  backend: "deepseek"
+  timeout_seconds: 150
+
+# params = 基线；运行时生效值 = 基线 + predict_params 表的自动调参覆盖
+params:
+  generation:
+    n_leading: 3              # 领涨主题条数
+    n_risk: 2                 # 风险主题条数
+    temperature: 0.4
+    max_tokens: 1400
+    context_top: 18           # 涨幅榜候选条数
+    context_bottom: 12        # 跌幅榜候选条数
+    news_digest_days: 2       # 新闻摘要回溯天数
+    news_digest_limit: 40
+  settle:
+    leading_hit_rank: 12      # 领涨命中：当日涨幅榜前 N
+    risk_hit_rank: 12         # 风险命中：当日跌幅榜前 N
+    top_k_actual: 5           # 漏判口径：实际榜前 K
+  reflect:
+    window_days: 20           # 复盘滚动窗口（交易日）
+    min_eval_samples: 3       # 最少已结算交易日数
+    temperature: 0.3
+    max_tokens: 1800
+  dify:                       # 预留：无运行时读取点，勿加入 tunable_bounds
+    enabled: false
+    temperature: 0.1
+    max_tokens: 256
+    retrieval_top_k: 6
+    prompt_version: 1
+    style_words: ["中性", "克制", "不渲染情绪", "平衡多空"]
+
+# 自动调参白名单（只允许存在真实读取点的点路径进入）
+tunable_bounds:
+  generation.n_leading:       {type: int,   min: 1, max: 6}
+  generation.n_risk:          {type: int,   min: 1, max: 6}
+  generation.temperature:     {type: float, min: 0.0, max: 1.0}
+  reflect.window_days:        {type: int,   min: 5, max: 60}
+  reflect.min_eval_samples:   {type: int,   min: 1, max: 30}
+  reflect.temperature:        {type: float, min: 0.0, max: 1.0}
+
+auto_tune:
+  enabled: true
+  max_apply_per_run: 3
